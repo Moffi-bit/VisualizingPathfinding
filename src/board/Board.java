@@ -58,11 +58,19 @@ public class Board extends Application {
 
 		for (int i = 0; i < graphicalCells.length; i++) {
 			for (int j = 0; j < graphicalCells[i].length; j++) {
+				/*
+				 * Check to see if this rectangle has already been made. If not, make the
+				 * rectangle.
+				 */
 				if (graphicalCells[i][j] != null) {
+					/*
+					 * See if it's type has changed after user interaction.
+					 */
 					if (Data.board[i][j].getType() != 0) {
-						graphicalCells[i][j].setFill(colors[Data.board[i][j].getType()]);
+						graphicalCells[i][j]
+								.setFill(colors[Data.board[i][j].getType()]);
 					}
-					
+
 					root.getChildren().add(graphicalCells[i][j]);
 				} else {
 					graphicalCells[i][j] = new Rectangle(
@@ -85,10 +93,31 @@ public class Board extends Application {
 	}
 
 	public void processMouseClick(MouseEvent event) {
-		int x = (int) event.getX(), y = (int) event.getY();
-		int xIndex = y / StateInfo.CELL_HEIGHT,
-				yIndex = x / StateInfo.CELL_WIDTH;
+		if (StateInfo.finished) {
+			System.out.println("Done pathfinding.");
+			return;
+		}
+		
+		/*
+		 * If the pathfinding has started do not permit new clicks.
+		 */
+		if (StateInfo.started) {
+			/*
+			 * Display something to the user to indicate that they cannot click during
+			 * pathfinding and replace the print statement with that.
+			 */
+			System.out.println(
+					"Cannot click on additional cells while the program is pathfinding!");
 
+			return;
+		}
+
+		int x = (int) event.getX(), y = (int) event.getY();
+		int yIndex = y / StateInfo.CELL_HEIGHT,
+				xIndex = x / StateInfo.CELL_WIDTH;
+		x = xIndex * StateInfo.CELL_WIDTH;
+		y = yIndex * StateInfo.CELL_HEIGHT;
+		
 		System.out.println("Mouse coordinates: " + x + ", " + y);
 		System.out.println("Data indices: " + xIndex + ", " + yIndex);
 
@@ -97,34 +126,39 @@ public class Board extends Application {
 		 * cells are correctly assigned.
 		 */
 		switch (StateInfo.state++) {
-		case 0: 
+		case 0:
 			Data.getCell(xIndex, yIndex).setType(2);
-			StateInfo.STARTING_X = xIndex;
-			StateInfo.STARTING_Y = yIndex;
+			StateInfo.START_X = xIndex;
+			StateInfo.START_Y = yIndex;
 			break;
 		case 1:
 			Data.getCell(xIndex, yIndex).setType(4);
 			StateInfo.END_X = xIndex;
 			StateInfo.END_Y = yIndex;
+			StateInfo.END_MOUSE_X = x;
+			StateInfo.END_MOUSE_Y = y;
 			break;
 		default:
 			Data.getCell(xIndex, yIndex).setType(1);
 			break;
 		}
 
-		System.out.println("Type: " + Data.getCell(xIndex, yIndex).getType() + " State: "
-				+ StateInfo.state);
+		System.out.println("Type: " + Data.getCell(xIndex, yIndex).getType()
+				+ " State: " + StateInfo.state);
+
+		/*
+		 * Start pathfinding! (currently pathfinding will start after 8 walls have been
+		 * set.
+		 */
+		if (StateInfo.state == 15) {
+			StateInfo.started = true;
+			Pathfinding.findTheOptimalPath();
+		}
+		
 		/*
 		 * Redraw the graphics after the user has clicked cells.
 		 */
 		fillGraphics();
-		
-		/*
-		 * Start pathfinding! (currently pathfinding will start after 7 walls have been set.
-		 */
-		if (StateInfo.state == 10) {
-			Pathfinding.findTheOptimalPath();
-		}
 	}
 
 }

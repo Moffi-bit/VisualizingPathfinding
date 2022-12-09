@@ -11,7 +11,7 @@ public class Data {
 	
 	public static Cell[][] board = new Cell[StateInfo.NUM_OF_CELLS][StateInfo.NUM_OF_CELLS];
 	
-	public static Cell getCell(int j, int i) {
+	public static Cell getCell(int i, int j) {
 		return board[i][j];
 	}
 	
@@ -24,7 +24,18 @@ public class Data {
 	}
 	
 	public static void calculateAllValues() {
-		// TODO: Implement this method.
+		System.out.println("Value calculations initiated...");
 		
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board[i].length; j++) {
+				int distance = distanceBetweenCurrentAndEnd(board[i][j].getxPos(), board[i][j].getyPos());
+				
+				board[i][j].setValue(distance);
+			}
+		}
+	}
+	
+	private static int distanceBetweenCurrentAndEnd(int currentX, int currentY) {
+		return Math.abs((int) Math.sqrt(Math.pow((StateInfo.END_MOUSE_X - currentX), 2) + Math.pow((StateInfo.END_MOUSE_Y - currentY), 2)));
 	}
 }

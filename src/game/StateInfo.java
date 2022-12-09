@@ -13,10 +13,12 @@ public class StateInfo {
 	public final static int CELL_WIDTH = WIDTH / NUM_OF_CELLS;
 	public final static int CELL_HEIGHT = HEIGHT / NUM_OF_CELLS;
 	
-	public static int STARTING_X = 0;
-	public static int STARTING_Y = 0;
+	public static int START_X = 0;
+	public static int START_Y = 0;
 	public static int END_X = 0;
 	public static int END_Y = 0;
+	public static int END_MOUSE_X = 0;
+	public static int END_MOUSE_Y = 0;
 	/*
 	 * If 0, no cells have been selected.
 	 * If 1, a start cell has been selected.
@@ -24,4 +26,6 @@ public class StateInfo {
 	 * After 2, indicates how many walls have been placed.
 	 */
 	public static int state = 0;
+	public static boolean started;
+	public static boolean finished;
 }
