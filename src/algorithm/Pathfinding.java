@@ -16,9 +16,10 @@ public class Pathfinding {
 		
 		System.out.println("Pathfinding started...");
 		
+		int shortest = 0;
+		Cell[] directions = new Cell[4];
+		
 		while(!pathfindingComplete()) {
-			Cell[] directions = new Cell[4];
-			
 			/*
 			 * UP
 			 */
@@ -47,7 +48,7 @@ public class Pathfinding {
 				directions[3] = Data.board[StateInfo.START_X][StateInfo.START_Y - 1];
 			}
 			
-			int shortest = findShortestDistanceIndex(directions);
+			shortest = findShortestDistanceIndex(directions);
 			
 			StateInfo.START_X = directions[shortest].getxPos() / StateInfo.CELL_WIDTH;
 			StateInfo.START_Y = directions[shortest].getyPos() / StateInfo.CELL_HEIGHT;
@@ -56,6 +57,7 @@ public class Pathfinding {
 		}
 		
 		StateInfo.finished = true;
+		directions[shortest].setType(4);
 	}
 	
 	public static boolean pathfindingComplete() {

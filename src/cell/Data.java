@@ -31,6 +31,9 @@ public class Data {
 				int distance = distanceBetweenCurrentAndEnd(board[i][j].getxPos(), board[i][j].getyPos());
 				
 				board[i][j].setValue(distance);
+				if (board[i][j].getType() == 1) {
+					board[i][j].setValue(5000);
+				}
 			}
 		}
 	}
