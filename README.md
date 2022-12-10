@@ -13,6 +13,6 @@ git clone https://github.com/Moffi-bit/VisualizingPathfinding.git
 ## Future Improvements
 
 * [x] Basic pathfinding (without walls)
-* [ ] Improved user interface (e.g menu, help, etc)
+* [x] Improved user interface (e.g menu, help, etc)
 * [ ] Improved how walls can be placed (e.g holding the mouse down)
 * [ ] Improved the pathfinding algorithm to work for all/most cases
