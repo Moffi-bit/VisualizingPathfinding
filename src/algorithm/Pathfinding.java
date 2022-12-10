@@ -73,7 +73,7 @@ public class Pathfinding {
 			if (directions[i].getValue() < j && directions[i].getType() != 1) {
 				j = directions[i].getValue();
 				index = i;
-			}
+			} 
 		}
 		
 		return index;

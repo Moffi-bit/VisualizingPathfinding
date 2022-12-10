@@ -1,9 +1,9 @@
-package board;
+package display;
 
-import algorithm.Pathfinding;
 /*
  * Personal Package Imports
  */
+import algorithm.Pathfinding;
 import cell.Data;
 import game.StateInfo;
 
@@ -11,11 +11,20 @@ import game.StateInfo;
  * JavaFX Imports
  */
 import javafx.application.Application;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
+
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 /**
@@ -26,7 +35,7 @@ import javafx.stage.Stage;
  * @author Lorenzo Stiavelli
  *
  */
-public class Board extends Application {
+public class Display extends Application {
 
 	static {
 		Data.fillBoard();
@@ -34,27 +43,81 @@ public class Board extends Application {
 
 	private Color[] colors = { Color.WHITE, Color.BLACK, Color.GREEN,
 			Color.BLUE, Color.RED };
-	private Group root = new Group();
-	private Rectangle[][] graphicalCells = new Rectangle[StateInfo.NUM_OF_CELLS][StateInfo.NUM_OF_CELLS];
+	private Group allCells = new Group();
+	private Group menuOptions = new Group();
+	private Group helpScreen = new Group();
+ 	private Rectangle[][] graphicalCells = new Rectangle[StateInfo.NUM_OF_CELLS][StateInfo.NUM_OF_CELLS];
 
 	public static void main(String[] args) {
 		launch(args);
 	}
 
 	public void start(Stage primaryStage) {
-		Scene scene = new Scene(root, StateInfo.WIDTH, StateInfo.HEIGHT,
-				Color.WHITE);
-
-		fillGraphics();
-		scene.setOnMouseClicked(this::processMouseClick);
+		menu(primaryStage);
 
 		primaryStage.setTitle("Visualization of Pathfinding");
-		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void menu(Stage primaryStage) {
+		Scene scene = new Scene(menuOptions, StateInfo.WIDTH, StateInfo.HEIGHT, Color.DARKSLATEGRAY);
+		
+		Text title = new Text("Visualizing Pathfinding");
+		title.setLayoutX(StateInfo.WIDTH / 3.5);
+		title.setLayoutY(StateInfo.HEIGHT / 5);
+		title.setFont(Font.font("Helvetica", FontWeight.BOLD, FontPosture.REGULAR, 50));
+		
+		Button vis = new Button("Visualize");
+		Button help = new Button("Help");
+		
+		vis.setTextAlignment(TextAlignment.CENTER);
+		vis.setLayoutX(StateInfo.WIDTH / 2.65);
+		vis.setLayoutY(StateInfo.HEIGHT * 2 / 5);
+		vis.setMinWidth(300);
+		vis.setMinHeight(100);
+		vis.setOnAction(new EventHandler() {
+			@Override
+			public void handle(Event arg0) {
+				cellGrid(primaryStage);
+			}
+		});
+		
+		help.setTextAlignment(TextAlignment.CENTER);
+		help.setLayoutX(StateInfo.WIDTH / 2.65);
+		help.setLayoutY(StateInfo.HEIGHT * 3 / 5);
+		help.setMinWidth(300);
+		help.setMinHeight(100);
+		help.setOnAction(new EventHandler() {
+			@Override
+			public void handle(Event arg0) {
+				help(primaryStage);
+			}
+		});
+		
+		menuOptions.getChildren().addAll(title, vis, help);
+		
+		primaryStage.setScene(scene);
+	}
+	
+	private void help(Stage primaryStage) {
+		Scene scene = new Scene(helpScreen, StateInfo.WIDTH, StateInfo.HEIGHT, Color.DARKSLATEGRAY);
+		
+		helpScreen.getChildren();
+		
+		primaryStage.setScene(scene);
+	}
+	
+	private void cellGrid(Stage primaryStage) {
+		Scene scene = new Scene(allCells, StateInfo.WIDTH, StateInfo.HEIGHT,
+				Color.WHITE);
+		fillGraphics();
+		scene.setOnMouseClicked(this::processMouseClick);
+		primaryStage.setScene(scene);
 	}
 
 	private void fillGraphics() {
-		root.getChildren().clear();
+		allCells.getChildren().clear();
 
 		for (int i = 0; i < graphicalCells.length; i++) {
 			for (int j = 0; j < graphicalCells[i].length; j++) {
@@ -71,7 +134,7 @@ public class Board extends Application {
 								.setFill(colors[Data.board[i][j].getType()]);
 					}
 
-					root.getChildren().add(graphicalCells[i][j]);
+					allCells.getChildren().add(graphicalCells[i][j]);
 				} else {
 					graphicalCells[i][j] = new Rectangle(
 							i * StateInfo.CELL_WIDTH,
@@ -86,12 +149,12 @@ public class Board extends Application {
 							.setStyle(Data.board[i][j].getType() == 1
 									? "-fx-stroke: white; -fx-stroke-width: 1;"
 									: "-fx-stroke: black; -fx-stroke-width: 1;");
-					root.getChildren().add(graphicalCells[i][j]);
+					allCells.getChildren().add(graphicalCells[i][j]);
 				}
 			}
 		}
 	}
-
+	
 	public void processMouseClick(MouseEvent event) {
 		if (StateInfo.finished) {
 			System.out.println("Done pathfinding.");
