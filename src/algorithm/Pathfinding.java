@@ -57,7 +57,10 @@ public class Pathfinding {
 		}
 		
 		StateInfo.finished = true;
-		directions[shortest].setType(4);
+		
+		if (directions[shortest] != null) {
+			directions[shortest].setType(4);
+		}
 	}
 	
 	public static boolean pathfindingComplete() {

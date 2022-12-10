@@ -17,7 +17,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
-
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -46,7 +46,10 @@ public class Display extends Application {
 	private Group allCells = new Group();
 	private Group menuOptions = new Group();
 	private Group helpScreen = new Group();
- 	private Rectangle[][] graphicalCells = new Rectangle[StateInfo.NUM_OF_CELLS][StateInfo.NUM_OF_CELLS];
+	private Scene scene = new Scene(menuOptions, StateInfo.WIDTH + 150,
+			StateInfo.HEIGHT, Color.DARKSLATEGRAY);
+	private Button path = new Button("Path Find");
+	private Rectangle[][] graphicalCells = new Rectangle[StateInfo.NUM_OF_CELLS][StateInfo.NUM_OF_CELLS];
 
 	public static void main(String[] args) {
 		launch(args);
@@ -58,62 +61,116 @@ public class Display extends Application {
 		primaryStage.setTitle("Visualization of Pathfinding");
 		primaryStage.show();
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void menu(Stage primaryStage) {
-		Scene scene = new Scene(menuOptions, StateInfo.WIDTH, StateInfo.HEIGHT, Color.DARKSLATEGRAY);
-		
+		scene.setRoot(menuOptions);
+
 		Text title = new Text("Visualizing Pathfinding");
 		title.setLayoutX(StateInfo.WIDTH / 3.5);
 		title.setLayoutY(StateInfo.HEIGHT / 5);
-		title.setFont(Font.font("Helvetica", FontWeight.BOLD, FontPosture.REGULAR, 50));
-		
+		title.setFont(Font.font("Helvetica", FontWeight.BOLD,
+				FontPosture.REGULAR, 50));
+
 		Button vis = new Button("Visualize");
 		Button help = new Button("Help");
-		
-		vis.setTextAlignment(TextAlignment.CENTER);
-		vis.setLayoutX(StateInfo.WIDTH / 2.65);
-		vis.setLayoutY(StateInfo.HEIGHT * 2 / 5);
-		vis.setMinWidth(300);
-		vis.setMinHeight(100);
+
+		modifyButtons(vis, 0);
 		vis.setOnAction(new EventHandler() {
 			@Override
 			public void handle(Event arg0) {
 				cellGrid(primaryStage);
 			}
 		});
-		
-		help.setTextAlignment(TextAlignment.CENTER);
-		help.setLayoutX(StateInfo.WIDTH / 2.65);
-		help.setLayoutY(StateInfo.HEIGHT * 3 / 5);
-		help.setMinWidth(300);
-		help.setMinHeight(100);
+
+		modifyButtons(help, 1);
 		help.setOnAction(new EventHandler() {
 			@Override
 			public void handle(Event arg0) {
 				help(primaryStage);
 			}
 		});
-		
+
 		menuOptions.getChildren().addAll(title, vis, help);
-		
+
 		primaryStage.setScene(scene);
 	}
-	
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void help(Stage primaryStage) {
-		Scene scene = new Scene(helpScreen, StateInfo.WIDTH, StateInfo.HEIGHT, Color.DARKSLATEGRAY);
+		scene.setRoot(helpScreen);
+		/*
+		 * To center the text on the screen (tried using multiple types of panes, stack,
+		 * flow, etc. but none could center the text correctly). The code below could
+		 * probably be drastically improved I just am not sure how to (even after
+		 * researching/looking for possible options).
+		 */
+		Text text = new Text(
+				"The first click will place the starting cell and the second click will place the ending cell. "
+						+ "The click afterwards");
+		Text text2 = new Text(
+				"will place walls which can try to obstruct the path to the ending cell."
+						+ "To make the program being pathfinding");
+		Text text3 = new Text("press the button labeled: \"Path Find\".");
 		
-		helpScreen.getChildren();
+		modifyText(text, 0);
+		modifyText(text2, 1);
+		modifyText(text3, 2);
 		
-		primaryStage.setScene(scene);
+		Button back = new Button("Go back to menu.");
+		
+		modifyButtons(back, 1);
+		back.setOnAction(new EventHandler() {
+			
+			@Override
+			public void handle(Event arg0) {
+				menu(primaryStage);
+			}
+		});
+		
+		helpScreen.getChildren().addAll(text, text2, text3, back);
 	}
 	
+	private void modifyButtons(Button button, int index) {
+		double[] modifier = {2, 3};
+		
+		button.setTextAlignment(TextAlignment.CENTER);
+		button.setLayoutX(StateInfo.WIDTH / 2.65);
+		button.setLayoutY(StateInfo.HEIGHT * modifier[index] / 5);
+		button.setMinWidth(300);
+		button.setMinHeight(100);
+	}
+	
+	private void modifyText(Text text, int index) {
+		double[] modifier = {5.0, 4.5, 4.1};
+		
+		text.setLayoutX(StateInfo.WIDTH / 6);
+		text.setLayoutY(StateInfo.HEIGHT / modifier[index]);
+		text.setFont(Font.font("Helvetica", FontWeight.BOLD,
+				FontPosture.REGULAR, 15));
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void cellGrid(Stage primaryStage) {
-		Scene scene = new Scene(allCells, StateInfo.WIDTH, StateInfo.HEIGHT,
-				Color.WHITE);
+		scene.setRoot(allCells);
 		fillGraphics();
+		
+		path.setLayoutX(StateInfo.WIDTH + 25);
+		path.setLayoutY(StateInfo.HEIGHT / 2);
+		path.setTextAlignment(TextAlignment.CENTER);
+		path.setMinWidth(100);
+		path.setMinHeight(50);
+		path.setOnAction(new EventHandler() {
+			
+			@Override
+			public void handle(Event arg0) {
+				StateInfo.started = true;
+				Pathfinding.findTheOptimalPath();
+				fillGraphics();
+			}
+		});
+		
 		scene.setOnMouseClicked(this::processMouseClick);
-		primaryStage.setScene(scene);
 	}
 
 	private void fillGraphics() {
@@ -153,14 +210,26 @@ public class Display extends Application {
 				}
 			}
 		}
+		
+		/*
+		 * Add path find button again.
+		 */
+		allCells.getChildren().add(path);
 	}
-	
+
 	public void processMouseClick(MouseEvent event) {
+		int x = (int) event.getX(), y = (int) event.getY();
+		
+		if (x > StateInfo.WIDTH) {
+			System.out.println("Out of bounds.");
+			return;
+		}
+		
 		if (StateInfo.finished) {
 			System.out.println("Done pathfinding.");
 			return;
 		}
-		
+
 		/*
 		 * If the pathfinding has started do not permit new clicks.
 		 */
@@ -174,13 +243,12 @@ public class Display extends Application {
 
 			return;
 		}
-
-		int x = (int) event.getX(), y = (int) event.getY();
+		
 		int yIndex = y / StateInfo.CELL_HEIGHT,
 				xIndex = x / StateInfo.CELL_WIDTH;
 		x = xIndex * StateInfo.CELL_WIDTH;
 		y = yIndex * StateInfo.CELL_HEIGHT;
-		
+
 		System.out.println("Mouse coordinates: " + x + ", " + y);
 		System.out.println("Data indices: " + xIndex + ", " + yIndex);
 
@@ -209,15 +277,6 @@ public class Display extends Application {
 		System.out.println("Type: " + Data.getCell(xIndex, yIndex).getType()
 				+ " State: " + StateInfo.state);
 
-		/*
-		 * Start pathfinding! (currently pathfinding will start after 8 walls have been
-		 * set.
-		 */
-		if (StateInfo.state == 15) {
-			StateInfo.started = true;
-			Pathfinding.findTheOptimalPath();
-		}
-		
 		/*
 		 * Redraw the graphics after the user has clicked cells.
 		 */
