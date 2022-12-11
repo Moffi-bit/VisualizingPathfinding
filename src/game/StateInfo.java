@@ -7,11 +7,13 @@ package game;
  */
 public class StateInfo {
 	
-	public final static int WIDTH = 1200;
-	public final static int HEIGHT = 800;
+	public final static int SCREEN_WIDTH = 1350;
+	public final static int SCREEN_HEIGHT = 800;
+	public final static int GRID_WIDTH = 1200;
+	public final static int GRID_HEIGHT = 800;
 	public final static int NUM_OF_CELLS = 50;
-	public final static int CELL_WIDTH = WIDTH / NUM_OF_CELLS;
-	public final static int CELL_HEIGHT = HEIGHT / NUM_OF_CELLS;
+	public final static int CELL_WIDTH = GRID_WIDTH / NUM_OF_CELLS;
+	public final static int CELL_HEIGHT = GRID_HEIGHT / NUM_OF_CELLS;
 	
 	public static int START_X = 0;
 	public static int START_Y = 0;

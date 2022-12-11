@@ -17,7 +17,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -46,8 +45,8 @@ public class Display extends Application {
 	private Group allCells = new Group();
 	private Group menuOptions = new Group();
 	private Group helpScreen = new Group();
-	private Scene scene = new Scene(menuOptions, StateInfo.WIDTH + 150,
-			StateInfo.HEIGHT, Color.DARKSLATEGRAY);
+	private Scene scene = new Scene(menuOptions, StateInfo.SCREEN_WIDTH,
+			StateInfo.SCREEN_HEIGHT, Color.DARKSLATEGRAY);
 	private Button path = new Button("Path Find");
 	private Rectangle[][] graphicalCells = new Rectangle[StateInfo.NUM_OF_CELLS][StateInfo.NUM_OF_CELLS];
 
@@ -59,6 +58,7 @@ public class Display extends Application {
 		menu(primaryStage);
 
 		primaryStage.setTitle("Visualization of Pathfinding");
+		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
 
@@ -67,8 +67,8 @@ public class Display extends Application {
 		scene.setRoot(menuOptions);
 
 		Text title = new Text("Visualizing Pathfinding");
-		title.setLayoutX(StateInfo.WIDTH / 3.5);
-		title.setLayoutY(StateInfo.HEIGHT / 5);
+		title.setLayoutX(StateInfo.SCREEN_WIDTH / 3.5);
+		title.setLayoutY(StateInfo.SCREEN_HEIGHT / 5);
 		title.setFont(Font.font("Helvetica", FontWeight.BOLD,
 				FontPosture.REGULAR, 50));
 
@@ -92,8 +92,6 @@ public class Display extends Application {
 		});
 
 		menuOptions.getChildren().addAll(title, vis, help);
-
-		primaryStage.setScene(scene);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -135,8 +133,8 @@ public class Display extends Application {
 		double[] modifier = {2, 3};
 		
 		button.setTextAlignment(TextAlignment.CENTER);
-		button.setLayoutX(StateInfo.WIDTH / 2.65);
-		button.setLayoutY(StateInfo.HEIGHT * modifier[index] / 5);
+		button.setLayoutX(StateInfo.SCREEN_WIDTH / 2.65);
+		button.setLayoutY(StateInfo.SCREEN_HEIGHT * modifier[index] / 5);
 		button.setMinWidth(300);
 		button.setMinHeight(100);
 	}
@@ -144,8 +142,8 @@ public class Display extends Application {
 	private void modifyText(Text text, int index) {
 		double[] modifier = {5.0, 4.5, 4.1};
 		
-		text.setLayoutX(StateInfo.WIDTH / 6);
-		text.setLayoutY(StateInfo.HEIGHT / modifier[index]);
+		text.setLayoutX(StateInfo.SCREEN_WIDTH / 6);
+		text.setLayoutY(StateInfo.SCREEN_HEIGHT / modifier[index]);
 		text.setFont(Font.font("Helvetica", FontWeight.BOLD,
 				FontPosture.REGULAR, 15));
 	}
@@ -155,8 +153,8 @@ public class Display extends Application {
 		scene.setRoot(allCells);
 		fillGraphics();
 		
-		path.setLayoutX(StateInfo.WIDTH + 25);
-		path.setLayoutY(StateInfo.HEIGHT / 2);
+		path.setLayoutX(StateInfo.SCREEN_WIDTH - 125);
+		path.setLayoutY(StateInfo.SCREEN_HEIGHT / 2);
 		path.setTextAlignment(TextAlignment.CENTER);
 		path.setMinWidth(100);
 		path.setMinHeight(50);
@@ -220,7 +218,7 @@ public class Display extends Application {
 	public void processMouseClick(MouseEvent event) {
 		int x = (int) event.getX(), y = (int) event.getY();
 		
-		if (x > StateInfo.WIDTH) {
+		if (x > StateInfo.GRID_WIDTH) {
 			System.out.println("Out of bounds.");
 			return;
 		}
