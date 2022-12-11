@@ -11,7 +11,7 @@ import game.StateInfo;
  * JavaFX Imports
  */
 import javafx.application.Application;
-import javafx.event.Event;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -48,6 +48,7 @@ public class Display extends Application {
 	private Scene scene = new Scene(menuOptions, StateInfo.SCREEN_WIDTH,
 			StateInfo.SCREEN_HEIGHT, Color.DARKSLATEGRAY);
 	private Button path = new Button("Path Find");
+	private Button reset = new Button("Reset Grid");
 	private Rectangle[][] graphicalCells = new Rectangle[StateInfo.NUM_OF_CELLS][StateInfo.NUM_OF_CELLS];
 
 	public static void main(String[] args) {
@@ -62,7 +63,6 @@ public class Display extends Application {
 		primaryStage.show();
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void menu(Stage primaryStage) {
 		scene.setRoot(menuOptions);
 
@@ -75,18 +75,20 @@ public class Display extends Application {
 		Button vis = new Button("Visualize");
 		Button help = new Button("Help");
 
-		modifyButtons(vis, 0);
-		vis.setOnAction(new EventHandler() {
+		modifyHomeButtons(vis, 0);
+		vis.setOnAction(new EventHandler<ActionEvent>() {
+
 			@Override
-			public void handle(Event arg0) {
+			public void handle(ActionEvent arg0) {
 				cellGrid(primaryStage);
 			}
 		});
 
-		modifyButtons(help, 1);
-		help.setOnAction(new EventHandler() {
+		modifyHomeButtons(help, 1);
+		help.setOnAction(new EventHandler<ActionEvent>() {
+
 			@Override
-			public void handle(Event arg0) {
+			public void handle(ActionEvent arg0) {
 				help(primaryStage);
 			}
 		});
@@ -94,7 +96,6 @@ public class Display extends Application {
 		menuOptions.getChildren().addAll(title, vis, help);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void help(Stage primaryStage) {
 		scene.setRoot(helpScreen);
 		/*
@@ -117,11 +118,11 @@ public class Display extends Application {
 		
 		Button back = new Button("Go back to menu.");
 		
-		modifyButtons(back, 1);
-		back.setOnAction(new EventHandler() {
+		modifyHomeButtons(back, 1);
+		back.setOnAction(new EventHandler<ActionEvent>() {
 			
 			@Override
-			public void handle(Event arg0) {
+			public void handle(ActionEvent arg0) {
 				menu(primaryStage);
 			}
 		});
@@ -129,7 +130,7 @@ public class Display extends Application {
 		helpScreen.getChildren().addAll(text, text2, text3, back);
 	}
 	
-	private void modifyButtons(Button button, int index) {
+	private void modifyHomeButtons(Button button, int index) {
 		double[] modifier = {2, 3};
 		
 		button.setTextAlignment(TextAlignment.CENTER);
@@ -137,6 +138,16 @@ public class Display extends Application {
 		button.setLayoutY(StateInfo.SCREEN_HEIGHT * modifier[index] / 5);
 		button.setMinWidth(300);
 		button.setMinHeight(100);
+	}
+	
+	private void modifyGridButtons(Button button, int index) {
+		double[] modifier = {2, 3};
+		
+		button.setLayoutX(StateInfo.SCREEN_WIDTH - 125);
+		button.setLayoutY(StateInfo.SCREEN_HEIGHT / modifier[index]);
+		button.setTextAlignment(TextAlignment.CENTER);
+		button.setMinWidth(100);
+		button.setMinHeight(50);
 	}
 	
 	private void modifyText(Text text, int index) {
@@ -148,27 +159,55 @@ public class Display extends Application {
 				FontPosture.REGULAR, 15));
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void cellGrid(Stage primaryStage) {
 		scene.setRoot(allCells);
 		fillGraphics();
 		
-		path.setLayoutX(StateInfo.SCREEN_WIDTH - 125);
-		path.setLayoutY(StateInfo.SCREEN_HEIGHT / 2);
-		path.setTextAlignment(TextAlignment.CENTER);
-		path.setMinWidth(100);
-		path.setMinHeight(50);
-		path.setOnAction(new EventHandler() {
-			
+		modifyGridButtons(path, 0);
+		path.setOnAction(new EventHandler<ActionEvent>() {
+
 			@Override
-			public void handle(Event arg0) {
+			public void handle(ActionEvent arg0) {
 				StateInfo.started = true;
 				Pathfinding.findTheOptimalPath();
 				fillGraphics();
 			}
 		});
 		
+		modifyGridButtons(reset, 1);
+		reset.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				resetGrid();
+			}
+		});
+		
 		scene.setOnMouseClicked(this::processMouseClick);
+		allCells.getChildren().addAll(path, reset);
+	}
+	
+	private void resetGrid() {
+		StateInfo.started = false;
+		StateInfo.finished = false;
+		StateInfo.state = 0;
+		StateInfo.START_X = 0;
+		StateInfo.START_Y = 0;
+		StateInfo.END_X = 0;
+		StateInfo.END_Y = 0;
+		StateInfo.END_MOUSE_X = 0;
+		StateInfo.END_MOUSE_Y = 0;
+		clearGrid();
+	}
+	
+	private void clearGrid() {
+		for (int i = 0; i < Data.board.length; i++) {
+			for (int j = 0; j < Data.board[i].length; j++) {
+				Data.board[i][j].setType(0);
+			}
+		}
+		
+		fillGraphics();
 	}
 
 	private void fillGraphics() {
@@ -184,10 +223,7 @@ public class Display extends Application {
 					/*
 					 * See if it's type has changed after user interaction.
 					 */
-					if (Data.board[i][j].getType() != 0) {
-						graphicalCells[i][j]
-								.setFill(colors[Data.board[i][j].getType()]);
-					}
+					graphicalCells[i][j].setFill(colors[Data.board[i][j].getType()]);
 
 					allCells.getChildren().add(graphicalCells[i][j]);
 				} else {
@@ -200,10 +236,7 @@ public class Display extends Application {
 					/*
 					 * To help indicate different cells by creating a border.
 					 */
-					graphicalCells[i][j]
-							.setStyle(Data.board[i][j].getType() == 1
-									? "-fx-stroke: white; -fx-stroke-width: 1;"
-									: "-fx-stroke: black; -fx-stroke-width: 1;");
+					graphicalCells[i][j].setStyle("-fx-stroke: black; -fx-stroke-width: 1;");
 					allCells.getChildren().add(graphicalCells[i][j]);
 				}
 			}
@@ -212,7 +245,7 @@ public class Display extends Application {
 		/*
 		 * Add path find button again.
 		 */
-		allCells.getChildren().add(path);
+		allCells.getChildren().addAll(path, reset);
 	}
 
 	public void processMouseClick(MouseEvent event) {
