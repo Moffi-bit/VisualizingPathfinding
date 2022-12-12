@@ -185,82 +185,7 @@ public class Display extends Application {
 			}
 		});
 
-		scene.addEventHandler(MouseEvent.ANY, event -> {
-			int x = (int) event.getX(), y = (int) event.getY();
-			
-			/*
-			 * Don't let someone click outside of the grid
-			 */
-			if (x > StateInfo.GRID_WIDTH) {
-				return;
-			}
-
-			/*
-			 * If it has done pathfinding do not do anything.
-			 */
-			if (StateInfo.finished) {
-				return;
-			}
-			
-			/*
-			 * If the pathfinding has started do not permit new clicks.
-			 */
-			if (StateInfo.started) {
-				return;
-			}
-			
-			int yIndex = y / StateInfo.CELL_HEIGHT,
-					xIndex = x / StateInfo.CELL_WIDTH;
-			x = xIndex * StateInfo.CELL_WIDTH;
-			y = yIndex * StateInfo.CELL_HEIGHT;
-			
-			if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-				if (StateInfo.state < 2) {
-					return;
-				}
-				/*
-				 * Recalculate positions
-				 */
-				x = (int) event.getX();
-				y = (int) event.getY();
-				yIndex = y / StateInfo.CELL_HEIGHT;
-				xIndex = x / StateInfo.CELL_WIDTH;
-				
-				Data.getCell(xIndex, yIndex).setType(1);
-				fillGraphics();
-			}
-			
-			if (event.getEventType() == MouseEvent.MOUSE_CLICKED) {
-				/*
-				 * Need to increment state after it is done comparing it's current value so next
-				 * cells are correctly assigned.
-				 */
-				switch (StateInfo.state++) {
-				case 0:
-					Data.getCell(xIndex, yIndex).setType(2);
-					StateInfo.START_X = xIndex;
-					StateInfo.START_Y = yIndex;
-					StateInfo.startPlaced = true;
-					break;
-				case 1:
-					Data.getCell(xIndex, yIndex).setType(4);
-					StateInfo.END_X = xIndex;
-					StateInfo.END_Y = yIndex;
-					StateInfo.END_MOUSE_X = x;
-					StateInfo.END_MOUSE_Y = y;
-					StateInfo.endPlaced = true;
-					break;
-				default:
-					Data.getCell(xIndex, yIndex).setType(1);
-					break;
-				}
-
-				/*
-				 * Redraw the graphics after the user has clicked cells.
-				 */
-				fillGraphics();
-	        }
-		});
+		mouseEvents();
 		
 		if (!allCells.getChildren().contains(path) && !allCells.getChildren().contains(reset)) {
 			allCells.getChildren().addAll(path, reset);
@@ -327,8 +252,94 @@ public class Display extends Application {
 		}
 
 		/*
-		 * Add path find button again.
+		 * Add grid page buttons
 		 */
 		allCells.getChildren().addAll(path, reset);
+	}
+	
+	private void updateCell(int x, int y) {
+		if (graphicalCells[x][y] != null) {
+			allCells.getChildren().remove(graphicalCells[x][y]);
+			graphicalCells[x][y]
+					.setFill(colors[Data.board[x][y].getType()]);
+			allCells.getChildren().add(graphicalCells[x][y]);
+		}
+	}
+	
+	private void mouseEvents() {
+		scene.addEventHandler(MouseEvent.ANY, event -> {
+			int x = (int) event.getX(), y = (int) event.getY();
+			
+			/*
+			 * Don't let someone click outside of the grid
+			 */
+			if (x > StateInfo.GRID_WIDTH) {
+				return;
+			}
+
+			/*
+			 * If it has done pathfinding do not do anything.
+			 */
+			if (StateInfo.finished) {
+				return;
+			}
+			
+			/*
+			 * If the pathfinding has started do not permit new clicks.
+			 */
+			if (StateInfo.started) {
+				return;
+			}
+			
+			int yIndex = y / StateInfo.CELL_HEIGHT,
+					xIndex = x / StateInfo.CELL_WIDTH;
+			x = xIndex * StateInfo.CELL_WIDTH;
+			y = yIndex * StateInfo.CELL_HEIGHT;
+			
+			if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+				if (StateInfo.state < 2) {
+					return;
+				}
+				/*
+				 * Recalculate positions
+				 */
+				x = (int) event.getX();
+				y = (int) event.getY();
+				yIndex = y / StateInfo.CELL_HEIGHT;
+				xIndex = x / StateInfo.CELL_WIDTH;
+				
+				Data.getCell(xIndex, yIndex).setType(1);
+				updateCell(xIndex, yIndex);
+			}
+			
+			if (event.getEventType() == MouseEvent.MOUSE_CLICKED) {				
+				/*
+				 * Need to increment state after it is done comparing it's current value so next
+				 * cells are correctly assigned.
+				 */
+				switch (StateInfo.state++) {
+				case 0:
+					Data.getCell(xIndex, yIndex).setType(2);
+					updateCell(xIndex, yIndex);
+					StateInfo.START_X = xIndex;
+					StateInfo.START_Y = yIndex;
+					StateInfo.startPlaced = true;
+					break;
+				case 1:
+					Data.getCell(xIndex, yIndex).setType(4);
+					updateCell(xIndex, yIndex);
+					StateInfo.END_X = xIndex;
+					StateInfo.END_Y = yIndex;
+					StateInfo.END_MOUSE_X = x;
+					StateInfo.END_MOUSE_Y = y;
+					StateInfo.endPlaced = true;
+					break;
+				default:
+					Data.getCell(xIndex, yIndex).setType(1);
+					updateCell(xIndex, yIndex);
+					break;
+				}
+	        }
+		});
 	}
 }
