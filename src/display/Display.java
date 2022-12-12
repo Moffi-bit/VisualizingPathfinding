@@ -111,48 +111,48 @@ public class Display extends Application {
 				"will place walls which can try to obstruct the path to the ending cell."
 						+ "To make the program being pathfinding");
 		Text text3 = new Text("press the button labeled: \"Path Find\".");
-		
+
 		modifyText(text, 0);
 		modifyText(text2, 1);
 		modifyText(text3, 2);
-		
+
 		Button back = new Button("Go back to menu.");
-		
+
 		modifyHomeButtons(back, 1);
 		back.setOnAction(new EventHandler<ActionEvent>() {
-			
+
 			@Override
 			public void handle(ActionEvent arg0) {
 				menu(primaryStage);
 			}
 		});
-		
+
 		helpScreen.getChildren().addAll(text, text2, text3, back);
 	}
-	
+
 	private void modifyHomeButtons(Button button, int index) {
-		double[] modifier = {2, 3};
-		
+		double[] modifier = { 2, 3 };
+
 		button.setTextAlignment(TextAlignment.CENTER);
 		button.setLayoutX(StateInfo.SCREEN_WIDTH / 2.65);
 		button.setLayoutY(StateInfo.SCREEN_HEIGHT * modifier[index] / 5);
 		button.setMinWidth(300);
 		button.setMinHeight(100);
 	}
-	
+
 	private void modifyGridButtons(Button button, int index) {
-		double[] modifier = {2, 3};
-		
+		double[] modifier = { 2, 3 };
+
 		button.setLayoutX(StateInfo.SCREEN_WIDTH - 125);
 		button.setLayoutY(StateInfo.SCREEN_HEIGHT / modifier[index]);
 		button.setTextAlignment(TextAlignment.CENTER);
 		button.setMinWidth(100);
 		button.setMinHeight(50);
 	}
-	
+
 	private void modifyText(Text text, int index) {
-		double[] modifier = {5.0, 4.5, 4.1};
-		
+		double[] modifier = { 5.0, 4.5, 4.1 };
+
 		text.setLayoutX(StateInfo.SCREEN_WIDTH / 6);
 		text.setLayoutY(StateInfo.SCREEN_HEIGHT / modifier[index]);
 		text.setFont(Font.font("Helvetica", FontWeight.BOLD,
@@ -162,18 +162,20 @@ public class Display extends Application {
 	private void cellGrid(Stage primaryStage) {
 		scene.setRoot(allCells);
 		fillGraphics();
-		
+
 		modifyGridButtons(path, 0);
 		path.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				StateInfo.started = true;
-				Pathfinding.findTheOptimalPath();
-				fillGraphics();
+				if (StateInfo.startPlaced && StateInfo.endPlaced) {
+					StateInfo.started = true;
+					Pathfinding.findTheOptimalPath();
+					fillGraphics();
+				}
 			}
 		});
-		
+
 		modifyGridButtons(reset, 1);
 		reset.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -182,12 +184,92 @@ public class Display extends Application {
 				resetGrid();
 			}
 		});
+
+		scene.addEventHandler(MouseEvent.ANY, event -> {
+			int x = (int) event.getX(), y = (int) event.getY();
+			
+			/*
+			 * Don't let someone click outside of the grid
+			 */
+			if (x > StateInfo.GRID_WIDTH) {
+				return;
+			}
+
+			/*
+			 * If it has done pathfinding do not do anything.
+			 */
+			if (StateInfo.finished) {
+				return;
+			}
+			
+			/*
+			 * If the pathfinding has started do not permit new clicks.
+			 */
+			if (StateInfo.started) {
+				return;
+			}
+			
+			int yIndex = y / StateInfo.CELL_HEIGHT,
+					xIndex = x / StateInfo.CELL_WIDTH;
+			x = xIndex * StateInfo.CELL_WIDTH;
+			y = yIndex * StateInfo.CELL_HEIGHT;
+			
+			if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+				if (StateInfo.state < 2) {
+					return;
+				}
+				/*
+				 * Recalculate positions
+				 */
+				x = (int) event.getX();
+				y = (int) event.getY();
+				yIndex = y / StateInfo.CELL_HEIGHT;
+				xIndex = x / StateInfo.CELL_WIDTH;
+				
+				Data.getCell(xIndex, yIndex).setType(1);
+				fillGraphics();
+			}
+			
+			if (event.getEventType() == MouseEvent.MOUSE_CLICKED) {
+				/*
+				 * Need to increment state after it is done comparing it's current value so next
+				 * cells are correctly assigned.
+				 */
+				switch (StateInfo.state++) {
+				case 0:
+					Data.getCell(xIndex, yIndex).setType(2);
+					StateInfo.START_X = xIndex;
+					StateInfo.START_Y = yIndex;
+					StateInfo.startPlaced = true;
+					break;
+				case 1:
+					Data.getCell(xIndex, yIndex).setType(4);
+					StateInfo.END_X = xIndex;
+					StateInfo.END_Y = yIndex;
+					StateInfo.END_MOUSE_X = x;
+					StateInfo.END_MOUSE_Y = y;
+					StateInfo.endPlaced = true;
+					break;
+				default:
+					Data.getCell(xIndex, yIndex).setType(1);
+					break;
+				}
+
+				/*
+				 * Redraw the graphics after the user has clicked cells.
+				 */
+				fillGraphics();
+	        }
+		});
 		
-		scene.setOnMouseClicked(this::processMouseClick);
-		allCells.getChildren().addAll(path, reset);
+		if (!allCells.getChildren().contains(path) && !allCells.getChildren().contains(reset)) {
+			allCells.getChildren().addAll(path, reset);
+		}
 	}
-	
+
 	private void resetGrid() {
+		StateInfo.endPlaced = false;
+		StateInfo.startPlaced = false;
 		StateInfo.started = false;
 		StateInfo.finished = false;
 		StateInfo.state = 0;
@@ -199,14 +281,14 @@ public class Display extends Application {
 		StateInfo.END_MOUSE_Y = 0;
 		clearGrid();
 	}
-	
+
 	private void clearGrid() {
 		for (int i = 0; i < Data.board.length; i++) {
 			for (int j = 0; j < Data.board[i].length; j++) {
 				Data.board[i][j].setType(0);
 			}
 		}
-		
+
 		fillGraphics();
 	}
 
@@ -223,7 +305,8 @@ public class Display extends Application {
 					/*
 					 * See if it's type has changed after user interaction.
 					 */
-					graphicalCells[i][j].setFill(colors[Data.board[i][j].getType()]);
+					graphicalCells[i][j]
+							.setFill(colors[Data.board[i][j].getType()]);
 
 					allCells.getChildren().add(graphicalCells[i][j]);
 				} else {
@@ -236,82 +319,16 @@ public class Display extends Application {
 					/*
 					 * To help indicate different cells by creating a border.
 					 */
-					graphicalCells[i][j].setStyle("-fx-stroke: black; -fx-stroke-width: 1;");
+					graphicalCells[i][j].setStyle(
+							"-fx-stroke: black; -fx-stroke-width: 1;");
 					allCells.getChildren().add(graphicalCells[i][j]);
 				}
 			}
 		}
-		
+
 		/*
 		 * Add path find button again.
 		 */
 		allCells.getChildren().addAll(path, reset);
 	}
-
-	public void processMouseClick(MouseEvent event) {
-		int x = (int) event.getX(), y = (int) event.getY();
-		
-		if (x > StateInfo.GRID_WIDTH) {
-			System.out.println("Out of bounds.");
-			return;
-		}
-		
-		if (StateInfo.finished) {
-			System.out.println("Done pathfinding.");
-			return;
-		}
-
-		/*
-		 * If the pathfinding has started do not permit new clicks.
-		 */
-		if (StateInfo.started) {
-			/*
-			 * Display something to the user to indicate that they cannot click during
-			 * pathfinding and replace the print statement with that.
-			 */
-			System.out.println(
-					"Cannot click on additional cells while the program is pathfinding!");
-
-			return;
-		}
-		
-		int yIndex = y / StateInfo.CELL_HEIGHT,
-				xIndex = x / StateInfo.CELL_WIDTH;
-		x = xIndex * StateInfo.CELL_WIDTH;
-		y = yIndex * StateInfo.CELL_HEIGHT;
-
-		System.out.println("Mouse coordinates: " + x + ", " + y);
-		System.out.println("Data indices: " + xIndex + ", " + yIndex);
-
-		/*
-		 * Need to increment state after it is done comparing it's current value so next
-		 * cells are correctly assigned.
-		 */
-		switch (StateInfo.state++) {
-		case 0:
-			Data.getCell(xIndex, yIndex).setType(2);
-			StateInfo.START_X = xIndex;
-			StateInfo.START_Y = yIndex;
-			break;
-		case 1:
-			Data.getCell(xIndex, yIndex).setType(4);
-			StateInfo.END_X = xIndex;
-			StateInfo.END_Y = yIndex;
-			StateInfo.END_MOUSE_X = x;
-			StateInfo.END_MOUSE_Y = y;
-			break;
-		default:
-			Data.getCell(xIndex, yIndex).setType(1);
-			break;
-		}
-
-		System.out.println("Type: " + Data.getCell(xIndex, yIndex).getType()
-				+ " State: " + StateInfo.state);
-
-		/*
-		 * Redraw the graphics after the user has clicked cells.
-		 */
-		fillGraphics();
-	}
-
 }

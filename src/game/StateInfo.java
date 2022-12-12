@@ -28,6 +28,6 @@ public class StateInfo {
 	 * After 2, indicates how many walls have been placed.
 	 */
 	public static int state = 0;
-	public static boolean started;
-	public static boolean finished;
+	
+	public static boolean started, finished, startPlaced, endPlaced;
 }
