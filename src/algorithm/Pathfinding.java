@@ -69,7 +69,7 @@ public class Pathfinding {
 	}
 	
 	public static int findShortestDistanceIndex(Cell[] directions) {
-		int j = 100000000;
+		int j = StateInfo.INFINITY;
 		int index = 0;
 		
 		for (int i = 0; i < directions.length; i++) {

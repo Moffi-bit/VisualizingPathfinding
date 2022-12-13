@@ -32,7 +32,7 @@ public class Data {
 				
 				board[i][j].setValue(distance);
 				if (board[i][j].getType() == 1) {
-					board[i][j].setValue(5000);
+					board[i][j].setValue(StateInfo.INFINITY);
 				}
 			}
 		}

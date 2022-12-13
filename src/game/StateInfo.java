@@ -14,6 +14,7 @@ public class StateInfo {
 	public final static int NUM_OF_CELLS = 50;
 	public final static int CELL_WIDTH = GRID_WIDTH / NUM_OF_CELLS;
 	public final static int CELL_HEIGHT = GRID_HEIGHT / NUM_OF_CELLS;
+	public final static int INFINITY = (int) (1.0 / 0.0);
 	
 	public static int START_X = 0;
 	public static int START_Y = 0;

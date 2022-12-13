@@ -29,7 +29,7 @@ import javafx.stage.Stage;
 /**
  * 
  * Types of Cells 0 - Empty/White 1 - Wall/Black 2 - Start/Green 3 - Path/Blue 4
- * - End/Red
+ * - End/Red 5 - Purple/FinalPath
  * 
  * @author Lorenzo Stiavelli
  *
@@ -41,7 +41,7 @@ public class Display extends Application {
 	}
 
 	private Color[] colors = { Color.WHITE, Color.BLACK, Color.GREEN,
-			Color.BLUE, Color.RED };
+			Color.BLUE, Color.RED, Color.PURPLE};
 	private Group allCells = new Group();
 	private Group menuOptions = new Group();
 	private Group helpScreen = new Group();
@@ -106,11 +106,11 @@ public class Display extends Application {
 		 */
 		Text text = new Text(
 				"The first click will place the starting cell and the second click will place the ending cell. "
-						+ "The click afterwards");
+						+ "The clicks afterwards");
 		Text text2 = new Text(
 				"will place walls which can try to obstruct the path to the ending cell."
-						+ "To make the program being pathfinding");
-		Text text3 = new Text("press the button labeled: \"Path Find\".");
+						+ "To begin pathfinding");
+		Text text3 = new Text("press the button labeled: \"Path Find\" on the right side.");
 
 		modifyText(text, 0);
 		modifyText(text2, 1);
@@ -257,7 +257,7 @@ public class Display extends Application {
 		allCells.getChildren().addAll(path, reset);
 	}
 	
-	private void updateCell(int x, int y) {
+	public void updateCell(int x, int y) {
 		if (graphicalCells[x][y] != null) {
 			allCells.getChildren().remove(graphicalCells[x][y]);
 			graphicalCells[x][y]
