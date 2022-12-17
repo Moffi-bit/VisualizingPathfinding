@@ -300,6 +300,7 @@ public class Display extends Application {
 				if (StateInfo.state < 2) {
 					return;
 				}
+				
 				/*
 				 * Recalculate positions
 				 */
@@ -308,11 +309,17 @@ public class Display extends Application {
 				yIndex = y / StateInfo.CELL_HEIGHT;
 				xIndex = x / StateInfo.CELL_WIDTH;
 				
-				Data.getCell(xIndex, yIndex).setType(1);
-				updateCell(xIndex, yIndex);
+				if (Data.getCell(xIndex, yIndex).getType() == 0) {
+					Data.getCell(xIndex, yIndex).setType(1);
+					updateCell(xIndex, yIndex);
+				}
 			}
 			
-			if (event.getEventType() == MouseEvent.MOUSE_CLICKED) {				
+			if (event.getEventType() == MouseEvent.MOUSE_CLICKED) {	
+				if (Data.getCell(xIndex, yIndex).getType() != 0) {
+					return;
+				}
+				
 				/*
 				 * Need to increment state after it is done comparing it's current value so next
 				 * cells are correctly assigned.

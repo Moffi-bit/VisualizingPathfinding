@@ -64,13 +64,14 @@ public class Pathfinding {
 	}
 	
 	public static boolean pathfindingComplete() {
-		System.out.println("Start: " + StateInfo.START_X + ", " + StateInfo.START_Y + "\nEnd: " + StateInfo.END_X + ", " + StateInfo.END_Y);
+//		System.out.println("Start: " + StateInfo.START_X + ", " + StateInfo.START_Y + "\nEnd: " + StateInfo.END_X + ", " + StateInfo.END_Y);
 		return StateInfo.START_X == StateInfo.END_X && StateInfo.START_Y == StateInfo.END_Y;
 	}
 	
 	public static int findShortestDistanceIndex(Cell[] directions) {
 		int j = StateInfo.INFINITY;
 		int index = 0;
+		
 		
 		for (int i = 0; i < directions.length; i++) {
 			if (directions[i].getValue() < j && directions[i].getType() != 1) {
