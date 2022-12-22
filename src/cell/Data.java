@@ -4,7 +4,7 @@ import game.StateInfo;
 
 /**
  * 
- * @author Lorenzo Stiavelli
+ * @author Moffi-bit (Github)
  *
  */
 public class Data {

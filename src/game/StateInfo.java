@@ -2,7 +2,7 @@ package game;
 
 /**
  * 
- * @author Lorenzo Stiavelli
+ * @author Moffi-bit (Github)
  *
  */
 public class StateInfo {

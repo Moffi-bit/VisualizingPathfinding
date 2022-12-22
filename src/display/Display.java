@@ -31,7 +31,7 @@ import javafx.stage.Stage;
  * Types of Cells 0 - Empty/White 1 - Wall/Black 2 - Start/Green 3 - Path/Blue 4
  * - End/Red 5 - Purple/FinalPath
  * 
- * @author Lorenzo Stiavelli
+ * @author Moffi-bit (Github)
  *
  */
 public class Display extends Application {

@@ -2,7 +2,7 @@ package cell;
 
 /**
  * 
- * @author Lorenzo Stiavelli
+ * @author Moffi-bit (Github)
  *
  */
 public class Cell {
