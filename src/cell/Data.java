@@ -16,9 +16,11 @@ public class Data {
 	}
 	
 	public static void fillBoard() {
+		int k = 1; 
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[i].length; j++) {
-				board[i][j] = new Cell(0, i * StateInfo.CELL_WIDTH, j * StateInfo.CELL_HEIGHT, 0);
+				board[i][j] = new Cell(0, i * StateInfo.CELL_WIDTH, j * StateInfo.CELL_HEIGHT, 0, k);
+				k++;
 			}
 		}
 	}

@@ -7,17 +7,18 @@ package cell;
  */
 public class Cell {
 	
-	private int type, xPos, yPos, value;
+	private int type, xPos, yPos, value, id;
 	
-	public Cell(int type, int xPos, int yPos, int value) {
+	public Cell(int type, int xPos, int yPos, int value, int id) {
 		this.type = type;
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.value = value;
+		this.id = id;
 	}
 
 	public int getType() {
-		return type;
+		return this.type;
 	}
 
 	public void setType(int type) {
@@ -25,15 +26,19 @@ public class Cell {
 	}
 
 	public int getxPos() {
-		return xPos;
+		return this.xPos;
 	}
 
 	public int getyPos() {
-		return yPos;
+		return this.yPos;
 	}
 
 	public int getValue() {
-		return value;
+		return this.value;
+	}
+	
+	public int getID() {
+		return this.id;
 	}
 
 	public void setValue(int value) {
