@@ -1,6 +1,6 @@
 package algorithm;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 import cell.Cell;
 import cell.Data;
@@ -122,49 +122,50 @@ public class Pathfinding {
 		System.out.println("Pathfinding started...");
 		
 		int shortest = 0;
-		Cell[] directions = new Cell[4];
+		
+		ArrayList<Cell> directions = new ArrayList<Cell>();
 		
 		while(!pathfindingComplete()) {
 			/*
 			 * UP
 			 */
-			if (StateInfo.START_X - 1 >= 0) {
-				directions[0] = Data.board[StateInfo.START_X - 1][StateInfo.START_Y];
+			if (StateInfo.START_X - 1 >= 0 && Data.board[StateInfo.START_X - 1][StateInfo.START_Y].getType() != 1) {
+				directions.add(Data.board[StateInfo.START_X - 1][StateInfo.START_Y]);
 			}
 			
 			/*
 			 * RIGHT
 			 */
-			if (StateInfo.START_Y + 1 < StateInfo.NUM_OF_CELLS) {
-				directions[1] = Data.board[StateInfo.START_X][StateInfo.START_Y + 1];
+			if (StateInfo.START_Y + 1 < StateInfo.NUM_OF_CELLS && Data.board[StateInfo.START_X][StateInfo.START_Y + 1].getType() != 1) {
+				directions.add(Data.board[StateInfo.START_X][StateInfo.START_Y + 1]);
 			}
 			
 			/*
 			 * DOWN
 			 */
-			if (StateInfo.START_X + 1 < StateInfo.NUM_OF_CELLS) {
-				directions[2] = Data.board[StateInfo.START_X + 1][StateInfo.START_Y];
+			if (StateInfo.START_X + 1 < StateInfo.NUM_OF_CELLS && Data.board[StateInfo.START_X + 1][StateInfo.START_Y].getType() != 1) {
+				directions.add(Data.board[StateInfo.START_X + 1][StateInfo.START_Y]);
 			}
 			
 			/*
 			 * LEFT
 			 */
-			if (StateInfo.START_Y - 1 >= 0) {
-				directions[3] = Data.board[StateInfo.START_X][StateInfo.START_Y - 1];
+			if (StateInfo.START_Y - 1 >= 0 && Data.board[StateInfo.START_X][StateInfo.START_Y - 1].getType() != 1) {
+				directions.add(Data.board[StateInfo.START_X][StateInfo.START_Y - 1]);
 			}
 			
 			shortest = findShortestDistanceIndex(directions);
 			
-			StateInfo.START_X = directions[shortest].getxPos() / StateInfo.CELL_WIDTH;
-			StateInfo.START_Y = directions[shortest].getyPos() / StateInfo.CELL_HEIGHT;
+			StateInfo.START_X = directions.get(shortest).getxPos() / StateInfo.CELL_WIDTH;
+			StateInfo.START_Y = directions.get(shortest).getyPos() / StateInfo.CELL_HEIGHT;
 			
-			directions[shortest].setType(3);
+			directions.get(shortest).setType(3);
 		}
 		
 		StateInfo.finished = true;
 		
-		if (directions[shortest] != null) {
-			directions[shortest].setType(4);
+		if (directions.get(shortest) != null) {
+			directions.get(shortest).setType(4);
 		}
 	}
 
@@ -174,14 +175,14 @@ public class Pathfinding {
 				&& StateInfo.START_Y == StateInfo.END_Y;
 	}
 
-	public static int findShortestDistanceIndex(Cell[] directions) {
+	public static int findShortestDistanceIndex(ArrayList<Cell> directions) {
 		int j = StateInfo.INFINITY;
 		int index = 0;
 
-		for (int i = 0; i < directions.length; i++) {
-			if (directions[i].getValue() < j
-					&& directions[i].getType() != 1) {
-				j = directions[i].getValue();
+		for (int i = 0; i < directions.size(); i++) {
+			if (directions.get(i).getValue() < j
+					&& directions.get(i).getType() != 1) {
+				j = directions.get(i).getValue();
 				index = i;
 			}
 		}
