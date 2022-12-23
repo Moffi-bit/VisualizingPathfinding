@@ -309,14 +309,14 @@ public class Display extends Application {
 				yIndex = y / StateInfo.CELL_HEIGHT;
 				xIndex = x / StateInfo.CELL_WIDTH;
 				
-				if (Data.getCell(xIndex, yIndex).getType() == 0) {
-					Data.getCell(xIndex, yIndex).setType(1);
+				if (Data.board[xIndex][yIndex].getType() == 0) {
+					Data.board[xIndex][yIndex].setType(1);
 					updateCell(xIndex, yIndex);
 				}
 			}
 			
 			if (event.getEventType() == MouseEvent.MOUSE_CLICKED) {	
-				if (Data.getCell(xIndex, yIndex).getType() != 0) {
+				if (Data.board[xIndex][yIndex].getType() != 0) {
 					return;
 				}
 				
@@ -326,14 +326,14 @@ public class Display extends Application {
 				 */
 				switch (StateInfo.state++) {
 				case 0:
-					Data.getCell(xIndex, yIndex).setType(2);
+					Data.board[xIndex][yIndex].setType(2);
 					updateCell(xIndex, yIndex);
 					StateInfo.START_X = xIndex;
 					StateInfo.START_Y = yIndex;
 					StateInfo.startPlaced = true;
 					break;
 				case 1:
-					Data.getCell(xIndex, yIndex).setType(4);
+					Data.board[xIndex][yIndex].setType(4);
 					updateCell(xIndex, yIndex);
 					StateInfo.END_X = xIndex;
 					StateInfo.END_Y = yIndex;
@@ -342,7 +342,7 @@ public class Display extends Application {
 					StateInfo.endPlaced = true;
 					break;
 				default:
-					Data.getCell(xIndex, yIndex).setType(1);
+					Data.board[xIndex][yIndex].setType(1);
 					updateCell(xIndex, yIndex);
 					break;
 				}

@@ -11,10 +11,6 @@ public class Data {
 	
 	public static Cell[][] board = new Cell[StateInfo.NUM_OF_CELLS][StateInfo.NUM_OF_CELLS];
 	
-	public static Cell getCell(int i, int j) {
-		return board[i][j];
-	}
-	
 	public static void fillBoard() {
 		int k = 1; 
 		for (int i = 0; i < board.length; i++) {
